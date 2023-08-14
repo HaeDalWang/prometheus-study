@@ -1,0 +1,42 @@
+global:
+  evaluation_interval: 1s
+
+rule_files:
+  - 'rules/*.yml'
+
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      - localhost:9093          
+
+scrape_configs:
+- job_name: prometheus
+  scrape_interval: 5s
+  scrape_timeout: 1s
+  static_configs:
+  - targets:
+    - localhost:9090
+
+- job_name: node-exporter
+  follow_redirects: true
+  scrape_interval: 3s
+  file_sd_configs:
+  - files:
+    - 'sd/*.yml'
+  relabel_configs:
+  - source_labels: ['__address__']
+    regex: '(.*):(.*)'
+    replacement: '${1}'
+    target_label: 'instance'
+  - source_labels: ['__address__']
+    regex: '(.*):(.*)'
+    replacement: '${2}'
+    target_label: 'port'
+
+- job_name: python-exporter
+  scrape_interval: 5s
+  scrape_timeout: 1s
+  static_configs:
+  - targets:
+    - localhost:8000

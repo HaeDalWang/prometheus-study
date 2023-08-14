@@ -1,0 +1,11 @@
+groups:
+
+- name: rule1
+  rules:
+  - alert: instance down
+    expr: up == 0
+    for: 3s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Instacne {{ $labels.instance }} {{ $labels.region }} down"
